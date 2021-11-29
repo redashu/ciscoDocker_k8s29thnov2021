@@ -19,6 +19,29 @@
 
 <img src="os.png">
 
+## Containers are using host OS kernel 
+
+<img src="k.png">
+
+### CRE 
+
+<img src="cre.png">
+
+## INtro about Docker 
+
+<img src="docker.png">
+
+### COntainers supported by Docker 
+
+<img src="kk.png">
+
+### Intro to docker Desktop 
+
+<img src="dd.png">
+
+
+
+
 
 
 
