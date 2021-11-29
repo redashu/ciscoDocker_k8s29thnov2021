@@ -302,6 +302,11 @@ d855aaba3d97
 
 ```
 
+### namespaces in docker engine for container isolation 
+
+<img src="ns.png">
+
+
 
 
 
