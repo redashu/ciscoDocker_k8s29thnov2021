@@ -256,6 +256,52 @@ f047c12e0597   alpine:latest   "ping www.google.com"   10 minutes ago   Up 5 sec
 
 ```
 
+### access any running container shell 
+
+```
+
+[Amith@ip-172-31-90-223 ~]$ 
+[Amith@ip-172-31-90-223 ~]$ docker  exec  -it  ashuc1  sh 
+/ # whoami
+root
+/ # uname  -r
+5.10.75-79.358.amzn2.x86_64
+/ # exit
+
+```
+
+### kill all running containds 
+
+```
+ docker  kill $(docker  ps -q)
+38fcba92ee76
+55ba3f564032
+e352cb2e04ca
+9f9ecd430a98
+78586d07bef0
+f047c12e0597
+7425e350cda1
+669d3c0b9325
+7f907ab3d2ba
+[Amith@ip-172-31-90-223 ~]$ docker  ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+```
+
+
+## removing all the dead containers 
+
+
+```
+docker  rm $(docker ps -aq)
+38fcba92ee76
+55ba3f564032
+d855aaba3d97
+9f9ecd430a98
+78586d07bef0
+
+```
+
 
 
 
