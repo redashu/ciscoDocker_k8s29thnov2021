@@ -1,1 +1,4 @@
-# ciscoDocker_k8s29thnov2021
+## training plan 
+
+<img src="plan.png">
+
