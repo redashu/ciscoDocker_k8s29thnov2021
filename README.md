@@ -306,7 +306,140 @@ d855aaba3d97
 
 <img src="ns.png">
 
+### app containerization 
 
+<img src="appcontx.png">
+
+
+### image building for any app 
+
+<img src="appimg.png">
+
+### python app image build
+
+```
+cd  pythonapp
+[ec2-user@ip-172-31-90-223 pythonapp]$ ls
+cisco.py  Dockerfile
+[ec2-user@ip-172-31-90-223 pythonapp]$ docker  build  -t  ashupython:appv1  . 
+Sending build context to Docker daemon  3.584kB
+Step 1/7 : FROM centos
+latest: Pulling from library/centos
+a1d0c7532777: Extracting  79.66MB/83.52MB
+
+
+```
+
+### checking images 
+
+```
+[ec2-user@ip-172-31-90-223 pythonapp]$ docker  images
+REPOSITORY        TAG       IMAGE ID       CREATED          SIZE
+amithapp          v1        4c979b383a23   10 seconds ago   277MB
+gopython          appv1     087bdb59e85e   10 seconds ago   277MB
+chandra-python    v1        85d10f1af5d6   17 seconds ago   277MB
+ashwathpython     appv1     2cf8cd59f8d3   28 seconds ago   277MB
+sathyagouthampy   appv1     6e2e689fd534   31 seconds ago   277MB
+ashupython        appv1     b17e3a0230f6   32 seconds ago   277MB
+
+```
+
+### creating python app container 
+
+```
+docker  run -it -d --name ashupyc1  ashupython:appv1 
+0a5fd1ca3ede05cb15a8b97a94163281bd8fb7c7ca7ac91ff9665c78772fa77a
+[ec2-user@ip-172-31-90-223 pythonapp]$ docker  ps
+CONTAINER ID   IMAGE              COMMAND                  CREATED         STATUS         PORTS     NAMES
+0a5fd1ca3ede   ashupython:appv1   "python3 /code/cisco…"   6 seconds ago   Up 5 seconds             ashupyc1
+
+
+```
+
+### checking stats 
+
+```
+yedfirstpyapp    0.00%     3.441MiB / 7.761GiB   0.04%     822B / 0B     0B / 0B     1
+54570b3a7aa1   mithuncon1         0.00%     3.434MiB / 7.761GiB   0.04%     822B / 0B     0B / 0B     1
+e5170f692504   chandra-c1         0.01%     3.438MiB / 7.761GiB   0.04%     822B / 0B     0B / 0B     1
+c28c7e883e71   subhrac1           0.00%     3.43MiB / 7.761GiB    0.04%     822B / 0B     0B / 0B     1
+0a5fd1ca3ede   ashupyc1           0.00%     3.445MiB / 7.761GiB   0.04%     1.04kB / 0B   0B / 0B     1
+3ac845550dd4   amithpyc1          0.01%     3.426MiB / 7.761GiB   0.04%     570B / 0B     0B / 0B     1
+56d78f2ccb6e   sathyagouthampyc   0.00%     3.449MiB / 7.761GiB   0.04%     500B / 0B     0B / 0B     1
+^C
+[ec2-user@ip-172-31-90-223 pythonapp]$ docker  stats
+
+```
+
+### checking live output of running container 
+
+```
+ docker logs -f ashupyc1
+Hello all , welcome to python..!!
+Welcome to LnB..
+Welcome to Containers ..!!
+______________________
+Hello all , welcome to python..!!
+Welcome to LnB..
+Welcome to Containers ..!!
+
+```
+
+### if we update code we have to rebuild that image 
+
+```
+ 49  docker  build  -t  ashupython:appv2  .
+   50  history 
+[ec2-user@ip-172-31-90-223 pythonapp]$ docker  images  |   grep  -i ashu
+ashupython        appv2               1aadc6fa9a8e   23 seconds ago   277MB
+ashupython        firstapp            97f1cd55dbc4   12 minutes ago   277MB
+ashupython        appv1               b17e3a0230f6   16 minutes ago   277MB
+[ec2-user@ip-172-31-90-223 pythonapp]$ docker run -itd --name ashupyc1 ashupython:appv2
+5aaec902dc1ee1147d405bf9037a9be5de061539f3cc4ce5b1ebfb1e8b3ac22d
+[ec2-user@ip-172-31-90-223 pythonapp]$ docker logs -f ashupyc1
+Hello all , welcome to python..!!
+Welcome to Cisco India !..
+Welcome to Containers ..!!
+
+```
+
+### rebuild image will be cached 
+
+```
+docker  build  -t  ashupython:appv3  .
+Sending build context to Docker daemon  4.608kB
+Step 1/8 : FROM centos
+ ---> 5d0da3dc9764
+Step 2/8 : LABEL name=ashutoshh
+ ---> Using cache
+ ---> 695c4070a07c
+Step 3/8 : LABEL email=ashutoshh@linux.com
+ ---> Using cache
+ ---> b353fe190108
+Step 4/8 : RUN  yum install python3 -y
+
+```
+
+### CMD keyword inside dockerfile is replacable 
+
+```
+ 63  docker run -itd --name ashuapp1  ashupython:appv3  
+   64  docker ps
+   65  docker run -itd --name ashuapp2  ashupython:appv3  python3 /code/test.py  
+   
+```
+
+### docker containers cleaning up 
+
+```
+ docker  kill ashuapp1  ashuapp2
+ashuapp1
+ashuapp2
+[ec2-user@ip-172-31-90-223 pythonapp]$ docker  rm  ashuapp1  ashuapp2
+ashuapp1
+ashuapp2
+
+```
 
 
 
