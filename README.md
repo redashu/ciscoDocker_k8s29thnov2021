@@ -440,6 +440,78 @@ ashuapp1
 ashuapp2
 
 ```
+### Docker engine 
+
+```
+ cd /var/lib/docker/
+[root@ip-172-31-90-223 docker]# ls
+buildkit  containers  image  network  overlay2  plugins  runtimes  swarm  tmp  trust  volumes
+[root@ip-172-31-90-223 docker]# 
+
+```
+
+### checking image build history 
+
+```
+docker history ashupython:appv3
+IMAGE          CREATED             CREATED BY                                      SIZE      COMMENT
+847b4522ef83   36 minutes ago      /bin/sh -c #(nop)  CMD ["python3" "/code/cis…   0B        
+f7c7ce2f6c93   36 minutes ago      /bin/sh -c #(nop) COPY file:63cca5c8fe3a6ec5…   257B      
+50257a0f4a01   46 minutes ago      /bin/sh -c #(nop) COPY file:2e1d3e8541eccf0b…   241B      
+12b3931fc6b2   About an hour ago   /bin/sh -c mkdir /code                          0B        
+58ff20a24671   About an hour ago   /bin/sh -c yum install python3 -y               46.2MB    
+b353fe190108   About an hour ago   /bin/sh -c #(nop)  LABEL email=ashutoshh@lin…   0B        
+695c4070a07c   About an hour ago   /bin/sh -c #(nop)  LABEL name=ashutoshh         0B      
+
+```
+
+### docker inspect to dump internal info 
+
+```
+ docker  inspect  ashupython:appv3  --format='{{.Id}}'
+ 
+ docker  inspect  ashupython:appv3  --format='{{.Config.Labels.email}}'
+ 
+```
+
+### Docker hub -- the public image registry understanding 
+
+<img src="reg.png">
+
+### pulling and observing 
+
+```
+docker pull alpine 
+Using default tag: latest
+latest: Pulling from library/alpine
+59bf1c3509f3: Pull complete 
+Digest: sha256:21a3deaa0d32a8057914f36584b5288d2e5ecc984380bc0118285c70fa8c9300
+Status: Downloaded newer image for alpine:latest
+docker.io/library/alpine:latest
+
+```
+
+### pushing image to docker hub 
+
+```
+
+[ec2-user@ip-172-31-90-223 appimages]$ docker tag  847b4522ef83    dockerashu/ciscopython:v0011 
+[ec2-user@ip-172-31-90-223 appimages]$ 
+[ec2-user@ip-172-31-90-223 appimages]$ 
+[ec2-user@ip-172-31-90-223 appimages]$ docker  login 
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: dockerashu
+Password: 
+WARNING! Your password will be stored unencrypted in /home/ec2-user/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[ec2-user@ip-172-31-90-223 appimages]$ docker push dockerashu/ciscopython:v0011
+
+```
+
+
 
 
 
