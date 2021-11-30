@@ -623,6 +623,51 @@ CONTAINER ID   IMAGE                 COMMAND        CREATED          STATUS     
 
 ```
 
+### Docker storage concpet 
+
+### storage for Engine 
+
+<img src="st.png">
+
+### checking default location on host OS for docker engine 
+
+```
+docker info   |   grep -i root
+ Docker Root Dir: /var/lib/docker
+ 
+```
+
+### attaching and formating storage to host by [Storage team ]
+
+```
+ 32  mkfs.xfs   /dev/xvdf  
+   33  mkdir  /ciscodocker 
+   34  mount  /dev/xvdf  /ciscodocker/
+   35  vim /etc/fstab 
+   36  history 
+[root@ip-172-31-90-223 ~]# cat  /etc/fstab 
+#
+UUID=131a92e1-307c-4b9b-af37-053719d9b69b     /           xfs    defaults,noatime  1   1
+/dev/xvdf  /ciscodocker/  xfs  defaults  0 0 
+[root@ip-172-31-90-223 ~]# mount -a
+[root@ip-172-31-90-223 ~]# 
+
+```
+
+### configure docker engine to use external storage 
+
+<img src="st1.png">
+
+### data migration from old to new storage location 
+
+```
+ 47  rsync -avp /var/lib/docker/  /ciscodocker/
+   48  history 
+[root@ip-172-31-90-223 sysconfig]# systemctl restart docker 
+[root@ip-172-31-90-223 sysconfig]# 
+
+```
+
 
 
 
