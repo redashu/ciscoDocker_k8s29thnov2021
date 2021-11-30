@@ -481,6 +481,85 @@ ashubr2
 
 ```
 
+### A container can be part of more than one bride 
+
+```
+ docker  network  connect  amithbrx2  amithbrx1c1
+[ec2-user@ip-172-31-90-223 appimages]$ docker  exec -it  amithbrx1c1  sh
+/ # ifconfig 
+eth0      Link encap:Ethernet  HWaddr 02:42:C0:A8:00:02  
+          inet addr:192.168.0.2  Bcast:192.168.15.255  Mask:255.255.240.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:18 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:4 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:1472 (1.4 KiB)  TX bytes:336 (336.0 B)
+
+eth1      Link encap:Ethernet  HWaddr 02:42:C0:B2:02:03  
+          inet addr:192.178.2.3  Bcast:192.178.2.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:7 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:570 (570.0 B)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ # ping  amithbrx2c1
+PING amithbrx2c1 (192.178.2.2): 56 data bytes
+64 bytes from 192.178.2.2: seq=0 ttl=64 time=0.117 ms
+64 bytes from 192.178.2.2: seq=1 ttl=64 time=0.093 ms
+^C
+--- amithbrx2c1 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.093/0.105/0.117 ms
+/ # ping  amithbrx2c2
+PING amithbrx2c2 (192.178.2.7): 56 data bytes
+64 bytes from 192.178.2.7: seq=0 ttl=64 time=0.098 ms
+64 bytes from 192.178.2.7: seq=1 ttl=64 time=0.084 ms
+^C
+--- amithbrx2c2 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.084/0.091/0.098 ms
+/ # exit
+
+```
+
+### docker host port forwarding 
+
+<img src="portf.png">
+
+```
+ docker  run -d --name ashuweb -p  4466:80  3dc27768b418
+9b93a0bef774252fa9d5319bb72ec7fd9acf5b794f17f1079a435482d63fda2f
+[ec2-user@ip-172-31-90-223 project-website-template]$ docker ps
+CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS        PORTS                                   NAMES
+9b93a0bef774   3dc27768b418   "/docker-entrypoint.…"   2 seconds ago   Up 1 second   0.0.0.0:4466->80/tcp, :::4466->80/tcp   ashuweb
+
+```
+### docker networking in one shot
+
+<img src="dnet11.png">
+
+### MACVLAN driver 
+
+<img src="macd.png">
+
+### IPvlan driver 
+
+<img src="ipvlan.png">
+
+### overlay network only for docker swarm cluster 
+
+<img src="overlay.png">
+
+
 
 
 
