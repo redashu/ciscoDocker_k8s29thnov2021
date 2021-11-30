@@ -268,7 +268,218 @@ round-trip min/avg/max = 0.903/0.973/1.014 ms
 / # exit
 
 ```
+### Container with No networking 
 
+```
+[ec2-user@ip-172-31-90-223 appimages]$ docker  network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+399720931c33   bridge    bridge    local
+6329283f7937   host      host      local
+d0270484c551   none      null      local
+[ec2-user@ip-172-31-90-223 appimages]$ docker  run -it --rm  --network  none  alpine sh 
+/ # ifconfig 
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ # ping 172.17.0.1
+PING 172.17.0.1 (172.17.0.1): 56 data bytes
+ping: sendto: Network unreachable
+/ # ping google.com 
+ping: bad address 'google.com'
+/ # exit
+
+```
+
+### Host bridge in Docker 
+
+<img src="hostbr.png">
+
+### host bridge in container 
+
+```
+ 193  docker  run -it --name c1  --network host alpine 
+  194  docker  run -itd --name c2  --network host alpine 
+  195  docker  run -itd --name c3  --network host alpine 
+  196  docker  start c1
+  197  docker  ps
+  198  docker  exec -it  c1  ifconfig 
+  199  docker  exec -it  c2  ifconfig 
+  
+```
+
+### default docker bridge problems and solution 
+
+<img src="solution.png">
+
+### problem of INternal DNS 
+
+```
+docker  ps
+CONTAINER ID   IMAGE     COMMAND     CREATED         STATUS         PORTS     NAMES
+092b0d6efc78   alpine    "/bin/sh"   5 minutes ago   Up 5 minutes             c3
+47892902bbc3   alpine    "/bin/sh"   5 minutes ago   Up 5 minutes             c2
+b4f183e3c82a   alpine    "/bin/sh"   5 minutes ago   Up 5 minutes             c1
+[ec2-user@ip-172-31-90-223 appimages]$ docker  exec -it c1 sh 
+/ # 
+/ # 
+/ # ping  c2
+ping: bad address 'c2'
+/ # exit
+
+```
+
+### creating custom bridge 
+
+```
+docker  network  create  ashubr1 
+26727309218d714251788f51d23f94f4dee253233a235c27d140201899fd1cbf
+[ec2-user@ip-172-31-90-223 appimages]$ docker  network  ls
+NETWORK ID     NAME      DRIVER    SCOPE
+26727309218d   ashubr1   bridge    local
+399720931c33   bridge    bridge    local
+6329283f7937   host      host      local
+d0270484c551   none      null      local
+[ec2-user@ip-172-31-90-223 appimages]$ docker  network   inspect  ashubr1
+[
+    {
+        "Name": "ashubr1",
+        "Id": "26727309218d714251788f51d23f94f4dee253233a235c27d140201899fd1cbf",
+        "Created": "2021-11-30T08:56:42.815698267Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                    
+```
+
+### creating container in custom bridge and checking their details 
+
+```
+ docker  run -itd --name ashuc1  --network ashubr1  alpine 
+09743baec6dca1a61cf0817344b3404c089a4a7bdba51480220a91b0e532d2e7
+[ec2-user@ip-172-31-90-223 appimages]$ docker  run -itd --name ashuc2  --network ashubr1  alpine 
+9bb8c38835cd7fd68ab5da4b06984dcfcbff60d6eb025494e055bca3e4a9c867
+[ec2-user@ip-172-31-90-223 appimages]$ 
+[ec2-user@ip-172-31-90-223 appimages]$ docker  network inspect  ashubr1 
+[
+    {
+        "Name": "ashubr1",
+        "Id": "26727309218d714251788f51d23f94f4dee253233a235c27d140201899fd1cbf",
+        "Created": "2021-11-30T08:56:42.815698267Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "09743baec6dca1a61cf0817344b3404c089a4a7bdba51480220a91b0e532d2e7": {
+                "Name": "ashuc1",
+                "EndpointID": "101857a8786d6b7f00545fff745e466bd739fea2ed802f42e509cb2194fecbbe",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            },
+            "9bb8c38835cd7fd68ab5da4b06984dcfcbff60d6eb025494e055bca3e4a9c867": {
+                "Name": "ashuc2",
+                "EndpointID": "f5dafc73417b79bac6bf8d242be0251e6634c95bce34ca99e70b39edfe8d445b",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+
+```
+
+
+### custom bridge with container static IP address 
+
+```
+ 226  docker  network create  ashubr2  --subnet  192.168.100.0/24 
+  227  docker  run -tid --name ashuc3  --network ashubr2  alpine 
+  228  docker  run -tid --name ashuc4  --network ashubr2 --ip 192.168.100.200  alpine 
+  229  history 
+[ec2-user@ip-172-31-90-223 appimages]$ docker  exec -it ashuc4 sh 
+/ # ifconfig 
+eth0      Link encap:Ethernet  HWaddr 02:42:C0:A8:64:C8  
+          inet addr:192.168.100.200  Bcast:192.168.100.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:7 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:570 (570.0 B)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ # 
+[ec2-user@ip-172-31-90-223 appimages]$ docker  restart  ashuc4
+ashuc4
+[ec2-user@ip-172-31-90-223 appimages]$ docker  exec -it ashuc4 sh 
+/ # ifconfig 
+eth0      Link encap:Ethernet  HWaddr 02:42:C0:A8:64:C8  
+          inet addr:192.168.100.200  Bcast:192.168.100.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:6 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:500 (500.0 B)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ # 
+
+```
+
+### deleting all network with no containers excpet default network 
+
+```
+docker network  prune 
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] y
+Deleted Networks:
+sayed1
+subhrabr
+bridge1
+priyankabr1
+chandra1
+ashubr2
+
+```
 
 
 
