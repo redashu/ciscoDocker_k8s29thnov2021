@@ -559,6 +559,70 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS   
 
 <img src="overlay.png">
 
+### Docker client and server / host 
+
+### docker users permission 
+
+<img src="perm.png">
+
+### adding user to docker group 
+
+```
+ usermod   -a  -G docker   test1
+[root@ip-172-31-90-223 ~]# 
+[root@ip-172-31-90-223 ~]# 
+[root@ip-172-31-90-223 ~]# su - test1
+Last login: Tue Nov 30 10:05:29 UTC 2021 on pts/27
+[test1@ip-172-31-90-223 ~]$ docker  images
+REPOSITORY               TAG        IMAGE ID       CREATED          SIZE
+ciscowebapp              v1         3dc27768b418   25 minutes ago   142MB
+amithtm/amithalp         pycodev1   ce425ccd1e69   2 hours ago      67.5MB
+amithalp                 pycodev1   ce425ccd1e69   2 hours ago      67.5MB
+dockerashu/ciscopython   v0011      847b4522ef83   24 hours ago     277MB
+alpine                   latest     c059bfaa849c  
+
+```
+
+### COntext idea 
+
+```
+7290  docker  context  create   ciscoDE --docker  host="tcp://3.219.13.32:2375"
+ 7291  docker  context  ls
+ 7292  docker context use ciscoDE
+ 7293  docker  context  ls
+ 7294  docker  images
+ 7295  docker network create  hellooo
+ 7296  history
+ 7297  docker  images
+ 7298  docker  context  ls
+ 7299  docker context use default
+
+```
+
+### docker client options 
+
+<img src="dclient.png">
+
+### portainer webui for docker engine 
+
+```
+docker  run -itd --restart always -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock  --name  webui  portainer/portainer 
+Unable to find image 'portainer/portainer:latest' locally
+latest: Pulling from portainer/portainer
+94cfa856b2b1: Pull complete 
+49d59ee0881a: Pull complete 
+a2300fd28637: Pull complete 
+Digest: sha256:fb45b43738646048a0a0cc74fcee2865b69efde857e710126084ee5de9be0f3f
+Status: Downloaded newer image for portainer/portainer:latest
+718e6700956ffb6de069f00f1e6a7ccb285f534b761d9b3da936f1a2464c566e
+[ec2-user@ip-172-31-90-223 ~]$ 
+[ec2-user@ip-172-31-90-223 ~]$ 
+[ec2-user@ip-172-31-90-223 ~]$ docker  ps
+CONTAINER ID   IMAGE                 COMMAND        CREATED          STATUS          PORTS                                       NAMES
+718e6700956f   portainer/portainer   "/portainer"   4 seconds ago    Up 3 seconds    0.0.0.0:9000->9000/tcp, :::9000->9000/tcp   webui
+
+```
+
 
 
 
