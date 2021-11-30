@@ -159,6 +159,116 @@ CONTAINER ID   IMAGE                 COMMAND                  CREATED          S
 
 ```
 
+### Docker Networking 
+
+<img src="dnet.png">
+
+### listing docker network bridges 
+
+```
+ docker  network  ls
+NETWORK ID     NAME      DRIVER    SCOPE
+399720931c33   bridge    bridge    local
+6329283f7937   host      host      local
+d0270484c551   none      null      local
+[ec2-user@ip-172-31-90-223 appimages]$ docker  network  inspect  bridge
+[
+    {
+        "Name": "bridge",
+        "Id": "399720931c337b8ed3efac6f2efef2a3f810e80ff177908456ec87f7dd5805ad",
+        "Created": "2021-11-29T04:01:04.977659177Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+                
+ ```
+ 
+### container check
+
+```
+ 167  docker  run -itd --name ashuc1 alpine 
+  168  docker  ps
+  169  history 
+[ec2-user@ip-172-31-90-223 appimages]$ docker  ps
+CONTAINER ID   IMAGE     COMMAND     CREATED              STATUS          PORTS     NAMES
+f6a210729aef   alpine    "/bin/sh"   10 seconds ago       Up 9 seconds              go_alpine
+ce727e0c9ba0   alpine    "/bin/sh"   15 seconds ago       Up 13 seconds             praneethac1
+835fd8fd72e1   alpine    "/bin/sh"   15 seconds ago       Up 14 seconds             mithun
+9c2c64f81642   alpine    "/bin/sh"   About a minute ago   Up 59 seconds             ashuc1
+[ec2-user@ip-172-31-90-223 appimages]$ 
+[ec2-user@ip-172-31-90-223 appimages]$ 
+[ec2-user@ip-172-31-90-223 appimages]$ docker  exec -it  ashuc1  sh 
+/ # ifconfig 
+eth0      Link encap:Ethernet  HWaddr 02:42:AC:11:00:02  
+          inet addr:172.17.0.2  Bcast:172.17.255.255  Mask:255.255.0.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:11 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:930 (930.0 B)  TX bytes:0 (0.0 B)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ # ping  172.17.0.3
+PING 172.17.0.3 (172.17.0.3): 56 data bytes
+64 bytes from 172.17.0.3: seq=0 ttl=64 time=0.156 ms
+64 bytes from 172.17.0.3: seq=1 ttl=64 time=0.074 ms
+64 bytes from 172.17.0.3: seq=2 ttl=64 time=0.089 ms
+^C
+--- 172.17.0.3 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.074/0.106/0.156 ms
+/ # exit
+
+```
+
+### filtering ip address from inspect 
+
+```
+docker  inspect  ashuc1 --format='{{.NetworkSettings.IPAddress}}'
+172.17.0.2
+
+```
+
+### Container can go outside host if host can -- using NAT 
+
+<img src="nat.png">
+
+### Docker networking 
+
+```
+appimages]$ docker  exec -it  ashuc1  sh 
+/ # 
+/ # ping  google.com 
+PING google.com (142.250.188.206): 56 data bytes
+64 bytes from 142.250.188.206: seq=0 ttl=50 time=0.903 ms
+64 bytes from 142.250.188.206: seq=1 ttl=50 time=0.980 ms
+64 bytes from 142.250.188.206: seq=2 ttl=50 time=0.955 ms
+64 bytes from 142.250.188.206: seq=3 ttl=50 time=1.014 ms
+64 bytes from 142.250.188.206: seq=4 ttl=50 time=0.975 ms
+64 bytes from 142.250.188.206: seq=5 ttl=50 time=1.011 ms
+^C
+--- google.com ping statistics ---
+6 packets transmitted, 6 packets received, 0% packet loss
+round-trip min/avg/max = 0.903/0.973/1.014 ms
+/ # exit
+
+```
+
 
 
 
