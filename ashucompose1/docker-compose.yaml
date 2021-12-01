@@ -1,0 +1,15 @@
+version: '3.8'
+services: # to define one or more app info 
+ ashuapp1: # first app name 
+  image: alpine
+  container_name: ashuc1
+  command: ping fb.com 
+ ashunodeapp: # second app name 
+  image: ashunodejs:v001  # image to be build
+  build: # to build image with location and name of dockerfile
+   context: ./Nodejs
+   dockerfile: Dockerfile 
+  container_name: ashunodec1 
+  ports: # for port forwarding 
+  - "3344:3000"
+  restart: always # restart policy 
