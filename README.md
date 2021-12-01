@@ -298,7 +298,192 @@ node2
 /opt # 
 
 ```
+### Multi container POd 
 
+```
+apiVersion: v1
+kind: Pod
+metadata:
+ name: ashupod3  # name of POD 
+spec:
+ containers: # one or more containers details 
+ - name: ashuc2 
+   image: nginx 
+   ports: # default app port 
+   - containerPort: 80 
+ - name: ashuc1  # name of container
+   image: alpine # image from docker hub 
+   command: ["sh","-c","ping fb.com"] # default process 
+
+
+```
+
+### deploy yaml 
+
+```
+
+kubectl apply -f multicont.yaml 
+pod/ashupod3 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get po 
+NAME         READY   STATUS    RESTARTS   AGE
+ashupod3     2/2     Running   0          58s
+pranipod-2   2/2     Running   0          37s
+
+```
+
+### login to particular container 
+
+```
+kubectl exec -it ashupod3 -c ashuc2 -- bash
+root@ashupod3:/# 
+root@ashupod3:/# cat  /etc/os-release 
+PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+root@ashupod3:/# exit
+exit
+
+```
+
+###
+
+```
+ kubectl exec -it ashupod3 -c ashuc1 -- sh  
+/ # cat /etc/os-release 
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.15.0
+PRETTY_NAME="Alpine Linux v3.15"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+/ # exit
+
+```
+
+### default container 
+
+```
+ kubectl exec -it ashupod3  --  bash      
+Defaulted container "ashuc2" out of: ashuc2, ashuc1
+root@ashupod3:/# exit
+exit
+
+```
+
+### taking help ofline using kubectl
+
+```
+7391  kubectl  explain  pod
+ 7392  kubectl  explain  pod.metadata
+ 7393  history
+ 7394  kubectl  explain  pod.spec 
+ 7395  kubectl  explain  pod.spec.containers
+ 
+```
+
+### auto yaml generate 
+
+```
+kubectl  run  ashupodx1  --image=nginx  --port 80  --dry-run=client  --restart=Never -o yaml 
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupodx1
+  name: ashupodx1
+spec:
+  containers:
+  - image: nginx
+    name: ashupodx1
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Never
+status: {}
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  run  ashupodx1  --image=nginx  --port 80  --dry-run=client   -o yaml  
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupodx1
+  name: ashupodx1
+spec:
+  containers:
+  - image: nginx
+    name: ashupodx1
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+```
+
+### json format output 
+
+```
+kubectl  run  ashupodx1  --image=nginx  --port 80  --dry-run=client   -o json 
+{
+    "kind": "Pod",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "ashupodx1",
+        "creationTimestamp": null,
+        "labels": {
+            "run": "ashupodx1"
+        }
+    },
+    "spec": {
+        "containers": [
+            {
+                "name": "ashupodx1",
+                "image": "nginx",
+                "ports": [
+                    {
+                        "containerPort": 80
+                    }
+                ],
+                "resources": {}
+            }
+        ],
+        "restartPolicy": "Always",
+        "dnsPolicy": "ClusterFirst"
+    },
+    "status": {}
+}
+
+```
+
+### storing output in a file 
+
+```
+kubectl  run  ashupodx1  --image=nginx  --port 80  --dry-run=client   -o json  >auto.json
+kubectl  run  ashupodx1  --image=nginx  --port 80  --dry-run=client   -o yaml  >auto.yaml
+
+```
+
+### same method for running json file also
+
+```
+kubectl apply -f auto.json 
+pod/ashupodx1 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get po
+NAME               READY   STATUS    RESTARTS   AGE
+amithpod1          2/2     Running   0          14m
+ashupod3           2/2     Running   0          17m
+
+```
 
 
 
