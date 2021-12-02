@@ -201,5 +201,140 @@ docker build  -t  dockerashu/ciscojavaapp:v1  https://github.com/redashu/java-sp
 
 <img src="net1.png">
 
+### list of CNI 
+
+<img src="cni.png">
+
+### pod can connect to each other by default independent of Namespaces 
+
+<img src="podnet.png">
+
+### access pod app running in k8s cluster 
+
+<img src="k8ss.png">
+
+### Node app deployment and access 
+
+### 
+
+```
+kubectl run ashunodeapp --image=dockerashu/nodejs:v1  --port 3000 --dry-run=client  -o yaml  >nodeapp.yaml 
+
+```
+
+### access app 
+
+### case 1 :  from kubectl client machine 
+
+```
+kubectl  port-forward  ashunodeapp  1122:3000
+Forwarding from 127.0.0.1:1122 -> 3000
+Forwarding from [::1]:1122 -> 3000
+Handling connection for 1122
+Handling connection for 1122
+
+```
+
+### case1 when kubectl system is access app running in POd 
+
+<img src="podaccess.png">
+
+### AS END user point of view 
+### Discussion 1
+
+<img src="net111.png">
+
+### Discussion 2 
+
+<img src="net222.png">
+
+### SErvice will use label / tag of apps -- to find all the pods and forward traffic to there 
+
+<img src="svc.png">
+
+### assign label to pod 
+
+```
+kubectl apply -f nodeapp.yaml 
+pod/ashunodeapp configured
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get po 
+NAME          READY   STATUS    RESTARTS   AGE
+ashunodeapp   1/1     Running   0          38m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get po --show-labels 
+NAME          READY   STATUS    RESTARTS   AGE   LABELS
+ashunodeapp   1/1     Running   0          38m   ashu=nodeapp1
+
+```
+
+### service type 
+
+<img src="stype.png">
+
+### NodePort type service 
+
+<img src="np.png">
+
+### creating nodeport svc 
+
+```
+kubectl  create  service  
+Create a service using a specified subcommand.
+
+Aliases:
+service, svc
+
+Available Commands:
+  clusterip    Create a ClusterIP service
+  externalname Create an ExternalName service
+  loadbalancer Create a LoadBalancer service
+  nodeport     Create a NodePort service
+  
+  ===
+  
+ kubectl  create  service  nodeport ashusvc1     --tcp  1234:3000  --dry-run=client  -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashusvc1
+  name: ashusvc1
+spec:
+  ports:
+  - name: 1234-3000
+    port: 1234
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: ashusvc1
+  type: NodePort
+status:
+  loadBalancer: {}
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  create  service  nodeport ashusvc1     --tcp  1234:3000  --dry-run=client  -o yaml  >nodesvc.yaml
+ 
+ ```
+ 
+ ### list 
+ 
+ ```
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get po --show-labels NAME          READY   STATUS    RESTARTS   AGE   LABELS
+ashunodeapp   1/1     Running   0          53m   ashu=nodeapp1
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl apply -f nodesvc.yaml 
+service/ashusvc1 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get  svc 
+NAME       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+ashusvc1   NodePort   10.99.222.170   <none>        1234:30929/TCP   13s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get  svc  -o wide
+NAME       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE   SELECTOR
+ashusvc1   NodePort   10.99.222.170   <none>        1234:30929/TCP   58s   ashu=nodeapp1
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  
+
+```
+## serivce view 
+
+<img src="view.png">
+
+
 
 
