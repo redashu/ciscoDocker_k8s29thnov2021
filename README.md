@@ -491,6 +491,48 @@ ashuapp-867479f7df-chf8n   1/1     Running   0          12s
 
 ```
 
+### final app access using custom DNS 
+
+<img src="cdns.png">
+
+### scaling concept and logic in k8s Pod history 
+
+<img src="scalee.png">
+
+### HPA in k8s 
+
+<img src="hpa.png">
+
+### auto scaling in deployment 
+
+```
+kubectl  get deploy       
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+ashuapp   1/1     1            1           3m7s
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  po          
+NAME                       READY   STATUS    RESTARTS   AGE
+ashuapp-7847f955c9-fvh8p   1/1     Running   0          3m10s
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  autoscale  deployment  ashuapp   --cpu-percent=80  --max=20  --min=3 
+horizontalpodautoscaler.autoscaling/ashuapp autoscaled
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  hpa
+NAME      REFERENCE            TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+ashuapp   Deployment/ashuapp   <unknown>/80%   3         20        0          9s
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  po
+NAME                       READY   STATUS    RESTARTS   AGE
+ashuapp-7847f955c9-fvh8p   1/1     Running   0          4m40s
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  po
+NAME                       READY   STATUS    RESTARTS   AGE
+ashuapp-7847f955c9-7f5fq   1/1     Running   0          7s
+ashuapp-7847f955c9-dx2gs   1/1     Running   0          7s
+ashuapp-7847f955c9-fvh8p   1/1     Running   0          4m47s
+
+
+```
+
 
 
 
