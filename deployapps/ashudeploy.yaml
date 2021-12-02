@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuapp
+  name: ashuapp # name of deployment 
+spec:
+  replicas: 1 # number of pod 
+  selector:
+    matchLabels:
+      app: ashuapp
+  strategy: {}
+  template: # will use template to create POD 
+    metadata:
+      creationTimestamp: null
+      labels: # label of pod 
+        app: ashuapp
+    spec:
+      containers:
+      - image: dockerashu/nodejs:v1 # image name 
+        name: nodejs # name of container 
+        resources: #  to put resource limit in Pod 
+         requests: # by default resource by pod 
+          cpu: 100m # 1vcpu -- 1000 mili core 
+          memory: 200M
+         limits: # max limit
+          cpu: 300m 
+          memory: 500M 
+status: {}

@@ -12,6 +12,7 @@ spec:
     port: 1234 # port of service 
     protocol: TCP
     targetPort: 3000 # port of app 
+    nodePort: 30001 
   selector: # Pod finder using given label 
     ashu: nodeapp1 # label of pod 
   type: NodePort # type of service 
