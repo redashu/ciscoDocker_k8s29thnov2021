@@ -335,6 +335,68 @@ ashusvc1   NodePort   10.99.222.170   <none>        1234:30929/TCP   58s   ashu=
 
 <img src="view.png">
 
+### more k8s commands 
+
+```
+ kubectl get  pod,svc
+NAME              READY   STATUS    RESTARTS   AGE
+pod/ashunodeapp   1/1     Running   0          143m
+
+NAME               TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/ashusvc1   NodePort   10.99.222.170   <none>        1234:30929/TCP   87m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get all     
+NAME              READY   STATUS    RESTARTS   AGE
+pod/ashunodeapp   1/1     Running   0          143m
+
+NAME               TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/ashusvc1   NodePort   10.99.222.170   <none>        1234:30929/TCP   87m
+
+```
+
+### merge file 
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels: # to assign lable / tag to this pod so that service can find it
+    ashu: nodeapp1 # key and value --etcd (nosql key: value)
+  name: ashunodeapp # name of pod 
+  namespace: ashu-space # namespace info 
+spec:
+  containers:
+  - image: dockerashu/nodejs:v1 # docker image 
+    name: ashunodeapp # name of container 
+    ports: # app port 
+    - containerPort: 3000
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashusvc1
+  name: ashusvc1 # name of service 
+  namespace: ashu-space # namespace info 
+spec:
+  ports:
+  - name: 1234-3000
+    port: 1234 # port of service 
+    protocol: TCP
+    targetPort: 3000 # port of app 
+  selector: # Pod finder using given label 
+    ashu: nodeapp1 # label of pod 
+  type: NodePort # type of service 
+status:
+  loadBalancer: {}
+
+```
 
 
 
