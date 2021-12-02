@@ -533,6 +533,42 @@ ashuapp-7847f955c9-fvh8p   1/1     Running   0          4m47s
 
 ```
 
+### k8s dashboard access
 
+
+```
+kubectl get  po -n kubernetes-dashboard
+NAME                                        READY   STATUS    RESTARTS   AGE
+dashboard-metrics-scraper-c45b7869d-fqsp9   1/1     Running   0          8h
+kubernetes-dashboard-576cb95f94-lp9mz       1/1     Running   0          8h
+ fire@ashutoshhs-MacBook-Air  ~  kubectl get  svc  -n kubernetes-dashboard
+NAME                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)         AGE
+dashboard-metrics-scraper   ClusterIP   10.111.197.72    <none>        8000/TCP        8h
+kubernetes-dashboard        NodePort    10.101.146.189   <none>        443:31081/TCP   8h
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl get  secret  -n kubernetes-dashboard
+NAME                               TYPE                                  DATA   AGE
+default-token-xt5jg                kubernetes.io/service-account-token   3      8h
+kubernetes-dashboard-certs         Opaque                                0      8h
+kubernetes-dashboard-csrf          Opaque                                1      8h
+kubernetes-dashboard-key-holder    Opaque                                2      8h
+kubernetes-dashboard-token-n8dxb   kubernetes.io/service-account-token   3      8h
+ fire@ashutoshhs-MacBook-Air  ~  kubectl describe  secret  kubernetes-dashboard-token-n8dxb  -n kubernetes-dashboard
+Name:         kubernetes-dashboard-token-n8dxb
+Namespace:    kubernetes-dashboard
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: kubernetes-dashboard
+              kubernetes.io/service-account.uid: c344c042-097a-41ac-bab1-19a5720576b0
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+namespace:  20 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6Ik9QV296MDFzNThCSG14aWtJLUV4YnBDcmlnWlM1TDRmN05ZZHdKRnNQdmMifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJrdWJlcm5ldGVzLWRhc2hib2FyZC10b2tlbi1uOGR4YiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImMzNDRjMDQyLTA5N2EtNDFhYy1iYWIxLTE5YTU3MjA1NzZiMCIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlcm5ldGVzLWRhc2hib2FyZDprdWJlcm5ldGVzLWRhc2hib2FyZCJ9.bdwkpTfBw
+
+
+```
 
 
