@@ -3,7 +3,6 @@ kind: Pod
 metadata:
  name: ashupod-2  # name of POD 
 spec:
- nodeName: node1 # manual scheduling 
  containers: # one or more containers details 
  - name: ashuc1  # name of container
    image: alpine # image from docker hub 
