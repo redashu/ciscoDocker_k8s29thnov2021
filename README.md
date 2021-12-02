@@ -397,6 +397,100 @@ status:
   loadBalancer: {}
 
 ```
+### moving app deployment from POd --to-- Deployment in k8s 
+
+<img src="appdep.png">
+
+### Deployment 
+
+```
+kubectl  create deployment  ashuapp --image=dockerashu/nodejs:v1   --dry-run=client -o yaml   >ashudeploy.yaml
+
+```
+
+### YAML OF deployment 
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuapp
+  name: ashuapp # name of deployment 
+spec:
+  replicas: 1 # number of pod 
+  selector:
+    matchLabels:
+      app: ashuapp
+  strategy: {}
+  template: # will use template to create POD 
+    metadata:
+      creationTimestamp: null
+      labels: # label of pod 
+        app: ashuapp
+    spec:
+      containers:
+      - image: dockerashu/nodejs:v1 # image name 
+        name: nodejs # name of container 
+        resources: {}
+status: {}
+
+
+```
+
+### deploy yaml 
+
+```
+
+kubectl apply -f ashudeploy.yaml 
+deployment.apps/ashuapp created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get deployment 
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+ashuapp   1/1     1            1           8s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get deploy     
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+ashuapp   1/1     1            1           13s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get  pod  
+NAME                       READY   STATUS    RESTARTS   AGE
+ashuapp-867479f7df-5rlv5   1/1     Running   0          25s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  delete pod ashuapp-867479f7df-5rlv5
+pod "ashuapp-867479f7df-5rlv5" deleted
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get  pod                            
+NAME                       READY   STATUS             RESTARTS     AGE
+ashuapp-867479f7df-8j7t4   1/1     Running            0            13s
+
+```
+
+### creating service so that it can match label 
+
+```
+kubectl  expose deployment  ashuapp --type        NodePort   --port 3000 --name ashusvc2  
+service/ashusvc2 exposed
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get  svc
+NAME        TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+ashusvc2    NodePort   10.96.20.219     <none>        3000:30692/TCP   7s
+
+```
+
+### manual pod scaling using deployment 
+
+```
+kubectl  scale deployment  ashuapp  --replicas=3
+deployment.apps/ashuapp scaled
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get deployNAME      READY   UP-TO-DATE   AVAILABLE   AGE
+ashuapp   3/3     3            3           9m23s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get po    
+NAME                       READY   STATUS    RESTARTS   AGE
+ashuapp-867479f7df-8j7t4   1/1     Running   0          8m39s
+ashuapp-867479f7df-b8jh2   1/1     Running   0          12s
+ashuapp-867479f7df-chf8n   1/1     Running   0          12s
+
+```
+
 
 
 
