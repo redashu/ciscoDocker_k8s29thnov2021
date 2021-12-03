@@ -228,6 +228,101 @@ Fri Dec  3 06:34:29 UTC 2021
 Fri Dec  3 06:34:39 UTC 2021
 
 ```
+### DB single pod via deployment 
+
+### yaml 
+
+```
+kubectl create deploy ashudb --image=mysql --dry-run=client -o yaml >db.yaml
+
+```
+
+### generating secret to store db root password 
+
+```
+kubectl create secret  generic  ashudbsec  --from-literal   mykey=CiscoDb0987 --dry-run=client -o yaml 
+apiVersion: v1
+data:
+  mykey: Q2lzY29EYjA5ODc=
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ashudbsec
+
+
+```
+
+### final YAML 
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb 
+  name: ashudb # name of deployment 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudb
+  strategy: {}
+  template: # template to creation pod 
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashudb
+    spec:
+      volumes: 
+      - name: ashudbvol 
+        hostPath:
+         path: /ashudb
+         type: DirectoryOrCreate 
+      containers:
+      - image: mysql # image from docker hub 
+        name: mysql
+        env: # to create or use env variable 
+        - name: MYSQL_ROOT_PASSWORD # env var 
+          valueFrom: # reading password from somewhere
+           secretKeyRef:
+            name: ashudbsec # name of secret 
+            key: mykey # key name 
+        volumeMount:
+        - name: ashudbvol
+          mountPath: /var/lib/mysql # this location is fixed for mysql db
+
+        resources: {}
+status: {}
+# creating secret live 
+---
+apiVersion: v1
+data:
+  mykey: Q2lzY29EYjA5ODc= # password in encoded format 
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ashudbsec # name of secret 
+
+
+
+```
+
+### deployed POD 
+
+```
+kubectl apply -f db.yaml 
+deployment.apps/ashudb created
+secret/ashudbsec created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get deploy 
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+ashudb   0/1     1            0           14s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get  po    
+NAME                      READY   STATUS    RESTARTS   AGE
+ashudb-667c64c68f-2dr85   1/1     Running   0          19s
+
+```
+
 
 
 
