@@ -323,6 +323,78 @@ ashudb-667c64c68f-2dr85   1/1     Running   0          19s
 
 ```
 
+### checking status 
+
+```
+ kubectl  get deploy 
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+ashudb   1/1     1            1           81m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get secret 
+NAME                  TYPE                                  DATA   AGE
+ashudbsec             Opaque                                1      81m
+default-token-5bw9v   kubernetes.io/service-account-token   3      27h
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get  svc  
+No resources found in ashu-space namespace.
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get  po 
+NAME                      READY   STATUS    RESTARTS   AGE
+ashudb-667c64c68f-2dr85   1/1     Running   0          81m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  logs ashudb-667c64c68f-2dr85
+2021-12-03 07:21:00+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.0.27-1debian10 started.
+2021-12-03 07:21:00+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+
+```
+### two tier micro service app example 
+
+<img src="micro.png">
+
+### NFS storage configuration 
+
+<img src="nfs.png">
+
+### creating service of cluster IP type 
+
+```
+kubectl expose deployment  ashudb  --type ClusterIP --port 3306 --dry-run=client -o yaml 
+
+```
+
+### deploy YAML 
+
+```
+ kubectl apply -f db.yaml 
+deployment.apps/ashudb configured
+secret/ashudbsec configured
+service/ashudb created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get  svc 
+NAME     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+ashudb   ClusterIP   10.102.47.64   <none>        3306/TCP   8s
+
+```
+
+### webapp for existing db 
+
+```
+kubectl  create deployment  ashuweb  --image=wordpress:4.8-apache --dry-run=client -o yaml 
+===
+ kubectl apply -f db.yaml 
+deployment.apps/ashudb configured
+secret/ashudbsec configured
+service/ashudb configured
+deployment.apps/ashuweb created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get deploy
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE
+ashudb    1/1     1            1           16m
+ashuweb   1/1     1            1           8s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get po  
+NAME                       READY   STATUS    RESTARTS   AGE
+ashudb-85c7c6c8f6-bmh4b    1/1     Running   0          16m
+ashuweb-5cdc66f659-46ccn   1/1     Running   0          17s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get svc
+NAME     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+ashudb   ClusterIP   10.102.47.64   <none>        3306/TCP   9m17s
+
+```
+
 
 
 
