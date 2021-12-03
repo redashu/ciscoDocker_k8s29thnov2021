@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: privateweb
+  name: privateweb # name of deployme t 
+spec:
+  replicas: 1 # replica 
+  selector:
+    matchLabels:
+      app: privateweb
+  strategy: {}
+  template: # deploy will be using this 
+    metadata:
+      creationTimestamp: null
+      labels: # label of POd 
+        app: privateweb
+    spec:
+      imagePullSecrets: # for calling secret 
+      - name: ashusec1 # name of secret 
+      containers:
+      - image: phx.ocir.io/axmbtg8judkl/webapp:v1 # docker image from OCR 
+        name: webapp
+        resources: {}
+status: {}
