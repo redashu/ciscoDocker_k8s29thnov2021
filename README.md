@@ -40,6 +40,56 @@ deployment.apps "ashuapp" deleted
 horizontalpodautoscaler.autoscaling "ashuapp" deleted
 
 ```
+### Deploy private registry image in k8s 
 
+### creating deployment yaml 
 
+```
+kubectl create deployment privateweb --image=phx.ocir.io/axmbtg8judkl/webapp:v1  --dry-run=client -o yaml  >privateapp.yaml
+
+```
+### private docker image can't be deployed bcz it need to pass auth details 
+
+### Intro to secret 
+
+<img src="secret.png">
+
+### creating secret in personal namespace 
+
+```
+kubectl create secret 
+Create a secret using specified subcommand.
+
+Available Commands:
+  docker-registry Create a secret for use with a Docker registry
+  generic         Create a secret from a local file, directory, or literal value
+  tls             Create a TLS secret
+
+===
+
+kubectl create secret docker-registry ashusec1  --docker-server=phx.ocir.io  --docker-username="axmbtdkl/lear@gmail.com"    --docker-password=")#Bi4PKZcfc"
+
+```
+
+### calling secret in pod of template of deployment 
+
+<img src="secret1.png">
+
+### deploy service from deployment using expose 
+
+```
+kubectl  get deploy
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+privateweb   1/1     1            1           18m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  expose deploy privateweb  --type LoadBalancer  --port 80 --name ashusvc1 
+service/ashusvc1 exposed
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl get  svc     
+NAME       TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+ashusvc1   LoadBalancer   10.103.122.83   <pending>     80:31351/TCP   13s
+
+```
+
+### NodePort vs LoadBalancer 
+
+<img src="lb.png">
 
