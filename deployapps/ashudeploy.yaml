@@ -22,9 +22,8 @@ spec:
         name: nodejs # name of container 
         resources: #  to put resource limit in Pod 
          requests: # by default resource by pod 
-          cpu: 100m # 1vcpu -- 1000 mili core 
-          memory: 200M
+          cpu: 200m # 1vcpu -- 1000 mili core 
          limits: # max limit
-          cpu: 300m 
-          memory: 500M 
+          cpu: 900m 
+          
 status: {}
