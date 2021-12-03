@@ -34,6 +34,16 @@ spec:
         volumeMounts:
         - name: ashudbvol1
           mountPath: /var/lib/mysql # this location is fixed for mysql db
+        livenessProbe: # for restarting container not pod 
+         exec:
+          command: ["ping","ashudb"]
+         initialDelaySeconds: 5
+         periodSeconds: 10 
+        readinessProbe: # to check db connection internally after success 
+         exec: # any script or command 
+          command: ["mysql","-u","root","-pCiscoDb0987","-e","select 1"]
+         initialDelaySeconds: 5
+         periodSeconds: 2 
 
         resources: {}
 status: {}
