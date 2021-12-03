@@ -93,3 +93,55 @@ ashusvc1   LoadBalancer   10.103.122.83   <pending>     80:31351/TCP   13s
 
 <img src="lb.png">
 
+
+## LimitRange in k8s 
+
+### namespace security 
+
+<img src="lmr.png">
+
+### Limit in Namespace 
+
+```
+apiVersion: v1 
+kind: LimitRange
+metadata:
+ name: only-cpu-restrict
+ namespace: ashu-space 
+spec: 
+ limits:
+ - max:
+    cpu: "700m" # 1 vcpu == 1000 milicore 
+    memory: 800Mi
+   min:
+    cpu: "100m"
+    memory: 200Mi 
+   type: Container 
+
+```
+
+### deploy it 
+
+```
+kubectl apply -f limitforns.yaml 
+limitrange/only-cpu-restrict created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get  limits 
+NAME                CREATED AT
+only-cpu-restrict   2021-12-03T05:31:53Z
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  describe limits only-cpu-restrict
+Name:       only-cpu-restrict
+Namespace:  ashu-space
+Type        Resource  Min    Max    Default Request  Default Limit  Max Limit/Request Ratio
+----        --------  ---    ---    ---------------  -------------  -----------------------
+Container   cpu       100m   700m   700m             700m           -
+Container   memory    200Mi  800Mi  800Mi            800Mi          -
+
+```
+### checking it 
+
+```
+kubectl apply -f ashu-pod1.yaml 
+Error from server (Forbidden): error when creating "ashu-pod1.yaml": pods "ashupod-2" is forbidden: maximum cpu usage per Container is 700m, but limit is 900m
+
+```
+
