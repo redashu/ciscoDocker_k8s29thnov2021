@@ -395,6 +395,18 @@ ashudb   ClusterIP   10.102.47.64   <none>        3306/TCP   9m17s
 
 ```
 
+### Ingress controller 
+
+<img src="ingress.png">
+
+### ingress controller options 
+
+<img src="ing.png">
+
+### nginx ingress controller deployment guide
+
+[link](https://kubernetes.github.io/ingress-nginx/deploy/#bare-metal-clusters)
+
 
 
 
