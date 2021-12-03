@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb 
+  name: ashudb # name of deployment 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudb
+  strategy: {}
+  template: # template to creation pod 
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashudb
+    spec:
+      volumes: 
+      - name: ashudbvol 
+        hostPath:
+         path: /ashudb
+         type: DirectoryOrCreate 
+      containers:
+      - image: mysql # image from docker hub 
+        name: mysql
+        env: # to create or use env variable 
+        - name: MYSQL_ROOT_PASSWORD # env var 
+          valueFrom: # reading password from somewhere
+           secretKeyRef:
+            name: ashudbsec # name of secret 
+            key: mykey # key name 
+        volumeMounts:
+        - name: ashudbvol
+          mountPath: /var/lib/mysql # this location is fixed for mysql db
+
+        resources: {}
+status: {}
+# creating secret live 
+---
+apiVersion: v1
+data:
+  mykey: Q2lzY29EYjA5ODc= # password in encoded format 
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ashudbsec # name of secret 
