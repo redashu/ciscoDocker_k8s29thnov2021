@@ -144,4 +144,90 @@ kubectl apply -f ashu-pod1.yaml
 Error from server (Forbidden): error when creating "ashu-pod1.yaml": pods "ashupod-2" is forbidden: maximum cpu usage per Container is 700m, but limit is 900m
 
 ```
+### Storage in k8s 
+<img src="st1.png">
+
+### Hostpath volume demo 
+
+### creating pod 
+
+```
+kubectl  run  ashupod22  --image=alpine  --dry-run=client  -o yaml  >hostpath.yaml
+
+===
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels: # label of pod
+    run: ashupod22
+  name: ashupod22 # name of pod 
+spec:
+  volumes: # to create volume of diff type
+  - name: ashuvol1 
+    hostPath: # will take space from minion node 
+     path: /ashudata1 # this location will be created in minion node
+     type: DirectoryOrCreate # if above location not present then it will be created
+  containers:
+  - image: alpine
+    name: ashupod22
+    volumeMounts: # to attach volume in container 
+    - name: ashuvol1 # name of volume 
+      mountPath: /mnt/vol1 # location inside container 
+    command: ["sh","-c","while true;do date >>/mnt/vol1/time.txt;sleep 10;done"]
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+```
+
+### deploy pod 
+
+```
+kubectl apply -f hostpath.yaml 
+pod/ashupod22 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get  po 
+NAME        READY   STATUS    RESTARTS   AGE
+ashupod22   1/1     Running   0          8s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl exec -it ashupod22  -- sh 
+/ # cd  /mnt/vol1/
+/mnt/vol1 # ls
+time.txt
+/mnt/vol1 # cat  time.txt 
+Fri Dec  3 06:19:02 UTC 2021
+Fri Dec  3 06:19:12 UTC 2021
+Fri Dec  3 06:19:22 UTC 2021
+Fri Dec  3 06:19:32 UTC 2021
+/mnt/vol1 # exit
+
+```
+### adding one more container in the same 
+
+```
+kubectl replace -f  hostpath.yaml --force
+pod/ashupod23 replaced
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/deployapps  kubectl  get po
+NAME        READY   STATUS    RESTARTS   AGE
+ashupod22   1/1     Running   0          15m
+ashupod23   2/2     Running   0          10s
+
+```
+
+### checking data 
+
+```
+kubectl exec -it ashupod23  -- bash
+Defaulted container "ashuc4" out of: ashuc4, ashupod22
+root@ashupod23:/# cd  /usr/share/nginx/html/
+root@ashupod23:/usr/share/nginx/html# ls
+time.txt
+root@ashupod23:/usr/share/nginx/html# cat time.txt 
+Fri Dec  3 06:34:19 UTC 2021
+Fri Dec  3 06:34:29 UTC 2021
+Fri Dec  3 06:34:39 UTC 2021
+
+```
+
+
 
