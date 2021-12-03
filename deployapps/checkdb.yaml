@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb 
+  name: ashudb # name of deployment 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudb
+  strategy: {}
+  template: # template to creation pod 
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashudb
+    spec:
+      volumes: 
+      - name: ashudbvol1 
+        nfs: # remote Storage server 
+         server: 172.31.90.223 # IP address of storage 
+         path: /data/ashu1 # location on storage server
+      containers:
+      - image: mysql:5.6 # image from docker hub 
+        name: mysql
+        env: # to create or use env variable 
+        - name: MYSQL_ROOT_PASSWORD # env var 
+          valueFrom: # reading password from somewhere
+           secretKeyRef:
+            name: ashudbsec # name of secret 
+            key: mykey # key name 
+        volumeMounts:
+        - name: ashudbvol1
+          mountPath: /var/lib/mysql # this location is fixed for mysql db
+
+        resources: {}
+status: {}
